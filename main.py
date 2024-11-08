@@ -9,7 +9,7 @@ from langchain_community.callbacks import get_openai_callback  # OpenAI 응답�
 from langchain.memory import ConversationBufferMemory  # 대화 내용을 저장하는 메모리
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory  # Streamlit에서 채팅 기록 관리
 from langchain.chains import ConversationalRetrievalChain  # 문서 검색과 회신을 결합한 대화 체인
-from langchain.chat_models import ChatOpenAI  # OpenAI 언어 모델 사용을 위한 모듈
+from langchain_community.chat_models import ChatOpenAI # OpenAI 언어 모델 사용을 위한 모듈
 from langchain.schema.messages import HumanMessage, AIMessage  # 사용자와 AI 메시지를 나타내는 스키마
 import tiktoken  # 토큰화 처리를 위한 모듈
 import json  # JSON 형식의 데이터 관리
