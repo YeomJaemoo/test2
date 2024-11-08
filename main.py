@@ -1,4 +1,3 @@
-# 라이브러리 및 모듈 가져오기
 import streamlit as st
 from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredPowerPointLoader
@@ -17,14 +16,30 @@ import base64
 import speech_recognition as sr
 import tempfile
 import fitz  # PyMuPDF
-import pytesseract
 from PIL import Image
 import io
 from transformers import CLIPProcessor, CLIPModel  # CLIP 모델 사용
+from google.cloud import vision  # Google Cloud Vision API
+
+# Google Cloud Vision API 클라이언트 초기화
+client = vision.ImageAnnotatorClient()
 
 # CLIP 모델 로드
 clip_model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
 clip_processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+# Google Cloud Vision API를 통한 OCR 함수
+def google_vision_ocr(image):
+    image_byte_array = io.BytesIO()
+    image.save(image_byte_array, format='PNG')
+    content = image_byte_array.getvalue()
+    
+    image = vision.Image(content=content)
+    response = client.text_detection(image=image)
+    texts = response.text_annotations
+    if texts:
+        return texts[0].description
+    return ""
 
 # PDF에서 이미지 추출 및 CLIP 임베딩 생성
 def extract_images_from_pdf(pdf_path):
@@ -43,8 +58,8 @@ def extract_images_from_pdf(pdf_path):
                 inputs = clip_processor(images=image, return_tensors="pt")
                 image_embeddings = clip_model.get_image_features(**inputs).detach().numpy()
 
-                # OCR로 이미지에서 텍스트 추출
-                image_text = pytesseract.image_to_string(image, lang="kor+eng")
+                # Google Vision API로 OCR
+                image_text = google_vision_ocr(image)
                 if image_text.strip():  # 텍스트가 있으면 추가
                     images_text.append({
                         "page": page_num + 1,
