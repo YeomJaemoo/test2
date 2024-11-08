@@ -14,8 +14,8 @@ langchain-community
 SpeechRecognition
 langchain_huggingface
 google-cloud-speech
+google-cloud-vision
 transformers
 torch
 Pillow
 PyMuPDF
-pytesseract
